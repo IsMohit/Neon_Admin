@@ -2,47 +2,39 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
-  // Username and password
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState(''); // Success or error
-  const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     try {
       await signInWithEmailAndPassword(auth, username, password);
-      console.log("User logged in Successfully");
-      setToastMessage('User logged in Successfully');
-      setToastType('success');
-      setShowToast(true);
+
+      // Show the success toast
+      toast.success('User logged in Successfully', {
+        position: "top-center",
+        autoClose: 1500,
+      });
+
+      // Delay navigation to allow the toast to display
       setTimeout(() => {
         navigate('/dashboard');
-      }, 1500); 
+      }, 2000); // Wait 2 seconds to ensure the toast is visible
     } catch (error) {
       console.log(error.message);
-      setToastMessage('Invalid username or password!');
-      setToastType('error');
-      setShowToast(true);
-    }
 
-    // if (username === adminCredentials.username && password === adminCredentials.password) {
-    //   setToastMessage('Login successful!');
-    //   setToastType('success');
-    //   setShowToast(true);
-    //   setTimeout(() => {
-    //     navigate('/dashboard');
-    //   }, 1500); 
-    // } else {
-    //   setToastMessage('Invalid username or password!');
-    //   setToastType('error');
-    //   setShowToast(true);
-    // }
+      // Show the error toast
+      toast.error('Invalid username or password!', {
+        position: "top-center",
+        autoClose: 1500,
+      });
+    }
   };
 
   return (
@@ -104,48 +96,12 @@ function Login() {
             borderRadius: '0 0 15px 15px',
           }}
         >
-          <small className="text-muted">© 2024 Neon Cafe</small>
+          <small className="text-muted">© 2024 Cafe Neone</small>
         </div>
       </div>
 
-      {/* Toast Notification */}
-      {showToast && (
-        <div
-          className={`toast position-fixed top-0 start-50 translate-middle-x mt-3`}
-          style={{
-            zIndex: 1050,
-            display: 'block',
-            backgroundColor: toastType === 'success' ? '#28a745' : '#dc3545',
-            color: '#fff',
-            borderRadius: '10px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          }}
-          role="alert"
-          aria-live="assertive"
-          aria-atomic="true"
-        >
-          <div
-            className="toast-header"
-            style={{
-              backgroundColor: toastType === 'success' ? '#218838' : '#c82333',
-              color: '#fff',
-              borderTopLeftRadius: '10px',
-              borderTopRightRadius: '10px',
-            }}
-          >
-            <strong className="me-auto">{toastType === 'success' ? 'Success' : 'Error'}</strong>
-            <button
-              type="button"
-              className="btn-close btn-close-white"
-              onClick={() => setShowToast(false)}
-              aria-label="Close"
-            ></button>
-          </div>
-          <div className="toast-body" style={{ fontSize: '1rem', fontWeight: '500' }}>
-            {toastMessage}
-          </div>
-        </div>
-      )}
+      {/* Toast Notifications */}
+      <ToastContainer />
     </div>
   );
 }

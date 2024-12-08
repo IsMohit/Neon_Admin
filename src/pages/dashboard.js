@@ -277,6 +277,7 @@ const Dashboard = () => {
               id="description"
               name="description"
               rows="2"
+              required
               value={newItem.description}
               onChange={handleItemChange}
             ></textarea>
